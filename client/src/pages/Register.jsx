@@ -1,75 +1,19 @@
-import { useState } from "react";
-import API from "../services/api";
+const registerUser = async () => {
+  try {
+    const res = await API.post(
+      "/auth/register",
+      form
+    );
 
-function Register() {
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    password: "",
-  });
+    console.log(res.data);
 
-  const registerUser = async () => {
-    try {
-      await API.post(
-        "/auth/register",
-        form
-      );
+    alert("Registered");
+  } catch (err) {
+    console.log(err.response?.data);
 
-      alert("Registered");
-    } catch (err) {
-      alert("Failed");
-    }
-  };
-
-  return (
-    <div style={{ padding: 20 }}>
-      <h2>Register</h2>
-
-      <input
-        placeholder="Name"
-        onChange={(e) =>
-          setForm({
-            ...form,
-            name: e.target.value,
-          })
-        }
-      />
-
-      <br />
-      <br />
-
-      <input
-        placeholder="Email"
-        onChange={(e) =>
-          setForm({
-            ...form,
-            email: e.target.value,
-          })
-        }
-      />
-
-      <br />
-      <br />
-
-      <input
-        type="password"
-        placeholder="Password"
-        onChange={(e) =>
-          setForm({
-            ...form,
-            password: e.target.value,
-          })
-        }
-      />
-
-      <br />
-      <br />
-
-      <button onClick={registerUser}>
-        Register
-      </button>
-    </div>
-  );
-}
-
-export default Register;
+    alert(
+      err.response?.data?.message ||
+      err.message
+    );
+  }
+};
