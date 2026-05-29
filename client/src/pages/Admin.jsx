@@ -1,26 +1,14 @@
-import {
-  useEffect,
-  useState,
-} from "react";
-
+import { useEffect, useState } from "react";
 import API from "../services/api";
 
 function Admin({ darkMode }) {
-  const [stats, setStats] =
-    useState({});
-
-  const [courses, setCourses] =
+  const [stats, setStats] = useState({});
+  const [courses, setCourses] = useState([]);
+  const [students, setStudents] = useState([]);
+  const [enrollments, setEnrollments] =
     useState([]);
 
-  const [students, setStudents] =
-    useState([]);
-
-  const [enrollments,
-    setEnrollments] =
-    useState([]);
-
-  const [newCourse,
-    setNewCourse] =
+  const [newCourse, setNewCourse] =
     useState({
       title: "",
       description: "",
@@ -32,188 +20,369 @@ function Admin({ darkMode }) {
   }, []);
 
   const fetchData = async () => {
-    const statsRes =
-      await API.get(
+    try {
+      const statsRes = await API.get(
         "/admin/stats"
       );
 
-    const courseRes =
-      await API.get(
+      const courseRes = await API.get(
         "/admin/courses"
       );
 
-    const studentRes =
-      await API.get(
+      const studentRes = await API.get(
         "/admin/students"
       );
 
-    const enrollRes =
-      await API.get(
+      const enrollRes = await API.get(
         "/admin/enrollments"
       );
 
-    setStats(statsRes.data);
-    setCourses(courseRes.data);
-    setStudents(studentRes.data);
-    setEnrollments(
-      enrollRes.data
-    );
+      setStats(statsRes.data);
+      setCourses(courseRes.data);
+      setStudents(studentRes.data);
+      setEnrollments(
+        enrollRes.data
+      );
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const addCourse = async () => {
-    await API.post(
-      "/admin/courses",
-      newCourse
-    );
+    try {
+      await API.post(
+        "/admin/courses",
+        newCourse
+      );
 
-    fetchData();
+      setNewCourse({
+        title: "",
+        description: "",
+        category: "",
+      });
 
-    setNewCourse({
-      title: "",
-      description: "",
-      category: "",
-    });
+      fetchData();
+    } catch (err) {
+      console.log(err);
+    }
   };
 
-  const deleteCourse = async (
-    id
-  ) => {
-    await API.delete(
-      `/admin/courses/${id}`
-    );
+  const deleteCourse = async (id) => {
+    try {
+      await API.delete(
+        `/admin/courses/${id}`
+      );
 
-    fetchData();
+      fetchData();
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
     <div
       style={{
+        minHeight: "100vh",
+        background: darkMode
+          ? "#111827"
+          : "#f3f4f6",
+        color: darkMode
+          ? "#fff"
+          : "#000",
         padding: "30px",
       }}
     >
-      <h1>
+      <h1
+        style={{
+          marginBottom: "30px",
+        }}
+      >
         🛠 Admin Dashboard
       </h1>
 
+      {/* Stats */}
       <div
         style={{
-          display: "flex",
+          display: "grid",
+          gridTemplateColumns:
+            "repeat(auto-fit,minmax(220px,1fr))",
           gap: "20px",
           marginBottom: "30px",
         }}
       >
-        <div>
-          📚 Courses:
-          {stats.courses}
+        <div
+          style={{
+            background: darkMode
+              ? "#1f2937"
+              : "#fff",
+            padding: "20px",
+            borderRadius: "12px",
+          }}
+        >
+          <h3>📚 Courses</h3>
+          <h2>{stats.courses || 0}</h2>
         </div>
 
-        <div>
-          👨‍🎓 Students:
-          {stats.students}
+        <div
+          style={{
+            background: darkMode
+              ? "#1f2937"
+              : "#fff",
+            padding: "20px",
+            borderRadius: "12px",
+          }}
+        >
+          <h3>🎓 Students</h3>
+          <h2>{stats.students || 0}</h2>
         </div>
 
-        <div>
-          📖 Enrollments:
-          {stats.enrollments}
+        <div
+          style={{
+            background: darkMode
+              ? "#1f2937"
+              : "#fff",
+            padding: "20px",
+            borderRadius: "12px",
+          }}
+        >
+          <h3>📖 Enrollments</h3>
+          <h2>
+            {stats.enrollments || 0}
+          </h2>
         </div>
       </div>
 
-      <h2>Add Course</h2>
-
-      <input
-        placeholder="Title"
-        value={newCourse.title}
-        onChange={(e) =>
-          setNewCourse({
-            ...newCourse,
-            title:
-              e.target.value,
-          })
-        }
-      />
-
-      <input
-        placeholder="Description"
-        value={
-          newCourse.description
-        }
-        onChange={(e) =>
-          setNewCourse({
-            ...newCourse,
-            description:
-              e.target.value,
-          })
-        }
-      />
-
-      <input
-        placeholder="Category"
-        value={
-          newCourse.category
-        }
-        onChange={(e) =>
-          setNewCourse({
-            ...newCourse,
-            category:
-              e.target.value,
-          })
-        }
-      />
-
-      <button
-        onClick={addCourse}
+      {/* Add Course */}
+      <div
+        style={{
+          background: darkMode
+            ? "#1f2937"
+            : "#fff",
+          padding: "25px",
+          borderRadius: "12px",
+          marginBottom: "30px",
+        }}
       >
-        Add Course
-      </button>
+        <h2>Add Course</h2>
 
-      <hr />
-
-      <h2>Courses</h2>
-
-      {courses.map((course) => (
         <div
-          key={course._id}
           style={{
-            marginBottom: "10px",
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "10px",
+            marginTop: "15px",
           }}
         >
-          {course.title}
+          <input
+            placeholder="Title"
+            value={newCourse.title}
+            onChange={(e) =>
+              setNewCourse({
+                ...newCourse,
+                title:
+                  e.target.value,
+              })
+            }
+            style={{
+              padding: "12px",
+              borderRadius: "8px",
+              border:
+                "1px solid #ccc",
+              flex: 1,
+            }}
+          />
+
+          <input
+            placeholder="Description"
+            value={
+              newCourse.description
+            }
+            onChange={(e) =>
+              setNewCourse({
+                ...newCourse,
+                description:
+                  e.target.value,
+              })
+            }
+            style={{
+              padding: "12px",
+              borderRadius: "8px",
+              border:
+                "1px solid #ccc",
+              flex: 1,
+            }}
+          />
+
+          <input
+            placeholder="Category"
+            value={
+              newCourse.category
+            }
+            onChange={(e) =>
+              setNewCourse({
+                ...newCourse,
+                category:
+                  e.target.value,
+              })
+            }
+            style={{
+              padding: "12px",
+              borderRadius: "8px",
+              border:
+                "1px solid #ccc",
+              flex: 1,
+            }}
+          />
 
           <button
-            onClick={() =>
-              deleteCourse(
-                course._id
-              )
-            }
+            onClick={addCourse}
+            style={{
+              background:
+                "#4f46e5",
+              color: "white",
+              border: "none",
+              padding:
+                "12px 20px",
+              borderRadius: "8px",
+              cursor: "pointer",
+            }}
           >
-            Delete
+            Add Course
           </button>
         </div>
-      ))}
+      </div>
 
-      <hr />
+      {/* Courses */}
+      <div
+        style={{
+          background: darkMode
+            ? "#1f2937"
+            : "#fff",
+          padding: "25px",
+          borderRadius: "12px",
+          marginBottom: "30px",
+        }}
+      >
+        <h2>📚 Courses</h2>
 
-      <h2>Students</h2>
+        {courses.map((course) => (
+          <div
+            key={course._id}
+            style={{
+              display: "flex",
+              justifyContent:
+                "space-between",
+              alignItems:
+                "center",
+              padding: "15px 0",
+              borderBottom:
+                "1px solid rgba(255,255,255,0.1)",
+            }}
+          >
+            <span>
+              {course.title}
+            </span>
 
-      {students.map((student) => (
-        <div
-          key={student._id}
-        >
-          {student.name} (
-          {student.email})
-        </div>
-      ))}
+            <button
+              onClick={() =>
+                deleteCourse(
+                  course._id
+                )
+              }
+              style={{
+                background:
+                  "#ef4444",
+                color: "white",
+                border: "none",
+                padding:
+                  "8px 12px",
+                borderRadius:
+                  "6px",
+                cursor:
+                  "pointer",
+              }}
+            >
+              Delete
+            </button>
+          </div>
+        ))}
+      </div>
 
-      <hr />
+      {/* Students */}
+      <div
+        style={{
+          background: darkMode
+            ? "#1f2937"
+            : "#fff",
+          padding: "25px",
+          borderRadius: "12px",
+          marginBottom: "30px",
+        }}
+      >
+        <h2>🎓 Students</h2>
 
-      <h2>Enrollments</h2>
+        {students.map(
+          (student) => (
+            <div
+              key={student._id}
+              style={{
+                padding:
+                  "12px",
+                marginBottom:
+                  "10px",
+                background:
+                  darkMode
+                    ? "#111827"
+                    : "#f3f4f6",
+                borderRadius:
+                  "8px",
+              }}
+            >
+              <strong>
+                {student.name}
+              </strong>
 
-      {enrollments.map((e) => (
-        <div key={e._id}>
-          {e.user?.name} →
-          {e.course?.title}
-        </div>
-      ))}
+              <br />
+
+              {student.email}
+            </div>
+          )
+        )}
+      </div>
+
+      {/* Enrollments */}
+      <div
+        style={{
+          background: darkMode
+            ? "#1f2937"
+            : "#fff",
+          padding: "25px",
+          borderRadius: "12px",
+        }}
+      >
+        <h2>📖 Enrollments</h2>
+
+        {enrollments.map((e) => (
+          <div
+            key={e._id}
+            style={{
+              padding:
+                "12px",
+              marginBottom:
+                "10px",
+              background:
+                darkMode
+                  ? "#111827"
+                  : "#f3f4f6",
+              borderRadius:
+                "8px",
+            }}
+          >
+            {e.user?.name} →{" "}
+            {e.course?.title}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
