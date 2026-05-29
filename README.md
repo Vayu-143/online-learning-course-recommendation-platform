@@ -436,11 +436,11 @@ This project demonstrates:
 
 GitHub:
 
-:contentReference[oaicite:0]{index=0}
+:[https://github.com/Vayu-143]
 
 Project Repository:
 
-:contentReference[oaicite:1]{index=1}
+[https://github.com/Vayu-143/online-learning-course-recommendation-platform]
 
 ---
 
